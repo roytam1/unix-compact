@@ -45,7 +45,7 @@ typedef long longint;
 #define PACKED	017437
 
 struct charac {
-#if defined(vax) || defined(pdp11)
+#if defined(vax) || defined(pdp11) || defined(_M_IX86) || defined(__i386__) || defined(__x86_64__)
 	char	lob, hib;
 #else
 	char	hib, lob;
