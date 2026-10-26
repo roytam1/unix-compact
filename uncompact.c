@@ -12,7 +12,6 @@ static char sccsid[] = "@(#)uncompact.c	4.7 (Berkeley) 8/25/84";
  *  Written by Colin L. Mc Master (UCB) February 14, 1979
  */
 #include "compact.h"
-#include <strings.h>
 
 union	cio c;
 union	cio d;
@@ -22,13 +21,17 @@ struct	stat status;			/* compacted file status */
 
 int	verbose = 0;
 
-main(argc, argv)
+int main(argc, argv)
 	int argc;
 	char *argv[];
 {
 	register short j;
 
 	argc--, argv++;
+#ifdef _MSC_VER
+	_setmode(_fileno(stdin), _O_BINARY);
+	_setmode(_fileno(stdout), _O_BINARY);
+#endif
 	if (argc > 0 && strcmp(*argv, "-v") == 0) {
 		verbose++;
 		argc--, argv++;
@@ -74,7 +77,7 @@ uncompact(file)
 			goto bad;
 		}
 		*cp = '\0';
-		cfp = fopen(file, "r");
+		cfp = fopen(file, "rb");
 		if (cfp == NULL) {
 			fprintf(stderr, "uncompact: "), perror(file);
 			goto bad;
@@ -187,7 +190,7 @@ setup(cfp, ignore)
 		goto bad;
 	}
 	if (strcmp(infname, "-") != 0) {
-		uncfp = fopen(fname, "w");
+		uncfp = fopen(fname, "wb");
 		if (uncfp == NULL)
 			goto bad2;
 		(void) fchmod(fileno(uncfp), status.st_mode);

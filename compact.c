@@ -11,7 +11,6 @@ static char sccsid[] = "@(#)compact.c	4.7 (Berkeley) 8/25/84";
  *
  *  Written by Colin L. Mc Master (UCB) February 28, 1979
  */
-#include <strings.h>
 #include "compact.h"
 
 union	cio d;
@@ -23,13 +22,17 @@ struct	stat ucfstatus;			/* uncompacted file status */
 
 int	verbose = 0;
 
-main(argc, argv)
+int main(argc, argv)
 	int argc;
 	char *argv[];
 {
 	register short j;
 
 	argc--, argv++;
+#ifdef _MSC_VER
+	_setmode(_fileno(stdin), _O_BINARY);
+	_setmode(_fileno(stdout), _O_BINARY);
+#endif
 	if (argc > 0 && strcmp(*argv, "-v") == 0) {
 		verbose++;
 		argc--, argv++;
@@ -83,7 +86,7 @@ compact(file)
 			fprintf(stderr, "%s: File name too long\n", file);
 			goto bad;
 		}
-		uncfp = fopen(file, "r");
+		uncfp = fopen(file, "rb");
 		if (uncfp == NULL) {
 			fprintf(stderr, "compact: "), perror(file);
 			goto bad;
@@ -136,7 +139,7 @@ compact(file)
 		csize = cfstatus.st_size;
 		ucsize = ucfstatus.st_size;
 		if (csize >= ucsize) {
-			fprintf("%s: ", infname);
+			fprintf(stderr, "%s: ", infname);
 			(void) unlink(fname);
 			printf("Not compacted, does not save bytes.\n");
 			goto done;
@@ -295,7 +298,7 @@ setup(uncfp, ignore)
 	}
 	if (strcmp(infname, "-") != 0) {
 		sprintf(fname, "%s.C", infname);
-		cfp = fopen(fname, "w");
+		cfp = fopen(fname, "wb");
 		if (cfp == NULL)
 			goto bad2;
 		(void) fchmod(fileno(cfp), ucfstatus.st_mode);

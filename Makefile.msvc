@@ -1,0 +1,17 @@
+# Build with the Visual C++ 6.0 command prompt:
+#   nmake /f Makefile.msvc
+# Optional: nmake /f Makefile.msvc clean
+
+CC=cl
+CFLAGS=/nologo /W3 /O2
+
+all: compact.exe uncompact.exe
+
+compact.exe: compact.c tree.c compact.h
+	$(CC) $(CFLAGS) /D_CRT_SECURE_NO_DEPRECATE compact.c tree.c /Fecompact.exe
+
+uncompact.exe: uncompact.c tree.c compact.h
+	$(CC) $(CFLAGS) /D_CRT_SECURE_NO_DEPRECATE uncompact.c tree.c /Feuncompact.exe
+
+clean:
+	-del compact.exe uncompact.exe compact.obj uncompact.obj tree.obj
