@@ -127,7 +127,7 @@ decompress(cfp, uncfp)
 	register struct node *p;
 	register short j;
 	register int m;
-	register struct cio *dp = &d;
+	register union cio *dp = &d;
 	char b;
 
 	p = dict;
